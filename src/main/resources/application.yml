@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: safetygps-server
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:safetygps}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}  # none, validate, update, create, create-drop 중 선택
+      default_batch_fetch_size: 1000
+      jdbc:
+        time_zone: Asia/Seoul
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
