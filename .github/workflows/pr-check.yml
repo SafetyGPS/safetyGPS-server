@@ -16,6 +16,11 @@ jobs:
       - run: ./gradlew clean build -x test
 
   review:
-    uses: coderabbitai/coderabbit-action@v2
-    with:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run CodeRabbit review
+        uses: coderabbitai/coderabbit-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
