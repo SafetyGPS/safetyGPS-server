@@ -38,3 +38,6 @@ out/
 
 # Environment
 .env
+
+# Ignore MySQL data directory
+docker/mysql/data/
