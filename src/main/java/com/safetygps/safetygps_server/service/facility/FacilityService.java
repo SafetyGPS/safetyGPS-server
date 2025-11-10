@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetygps.safetygps_server.domain.facility.Facility;
 
 import com.safetygps.safetygps_server.repository.facility.FacilityRepository;
+import com.safetygps.safetygps_server.controller.facility.response.FacilityResponse;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -104,14 +106,20 @@ public class FacilityService {
         return null;
     }
 
-    @Transactional(readOnly = true)
-    public List<Facility> getFacilities(String sigunNm, String gu, String dong) {
-        if (dong != null && !dong.isBlank()) {
-            return facilityRepository.findBySigunNmAndGuAndDong(sigunNm, gu, dong);
-        } else if (gu != null && !gu.isBlank()) {
-            return facilityRepository.findBySigunNmAndGu(sigunNm, gu);
-        } else {
-            return facilityRepository.findBySigunNm(sigunNm);
-        }
+    public List<FacilityResponse> getFacilities(String sigunNm, String gu, String dong) {
+        List<Facility> facilities = facilityRepository.findByConditions(sigunNm, gu, dong);
+
+        return facilities.stream()
+                .map(f -> new FacilityResponse(
+                        f.getInstitutionName(),
+                        f.getFacilityType(),
+                        f.getSigunNm(),
+                        f.getGu(),
+                        f.getDong(),
+                        f.getRoadAddress(),
+                        f.getLatitude() != null ? f.getLatitude().toString() : null,
+                        f.getLongitude() != null ? f.getLongitude().toString() : null
+                ))
+                .toList();
     }
 }
