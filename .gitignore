@@ -40,4 +40,4 @@ out/
 .env
 
 # Ignore MySQL data directory
-docker/mysql/data/
+mysql/data/
