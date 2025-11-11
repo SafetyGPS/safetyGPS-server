@@ -18,3 +18,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+gg-openapi:
+  base-url: https://openapi.gg.go.kr/FiresttnPolcsttnM
+  api-key: ${GG_OPENAPI_KEY:}
+  default-page-size: 1000
+  response-type: json
