@@ -1,13 +1,13 @@
-package com.safetygps.safetygps_server.controller;
+package com.safetygps.safetygps_server.controller.cctv;
 
-import com.safetygps.safetygps_server.domain.CctvResponse;
+import com.safetygps.safetygps_server.domain.cctv.CctvResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.safetygps.safetygps_server.service.CctvService;
+import com.safetygps.safetygps_server.service.cctv.CctvService;
 
 import java.util.List;
 
