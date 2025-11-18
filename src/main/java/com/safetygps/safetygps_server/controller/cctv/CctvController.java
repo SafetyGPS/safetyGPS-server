@@ -20,7 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CctvController {
 
-    private static final Logger logger = LoggerFactory.getLogger(GeometryController.class);
     private final CctvService cctvService;
 
     @Operation(summary = "지역명으로 CCTV 조회", description = "입력된 동/읍/리에 해당하는 CCTV 위치 데이터를 조회합니다.")
