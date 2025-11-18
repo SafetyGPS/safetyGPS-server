@@ -4,15 +4,17 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetygps.safetygps_server.controller.securitylight.response.SecurityLightResponse;
+import com.safetygps.safetygps_server.domain.securitylight.SecurityLight;
 import com.safetygps.safetygps_server.domain.securitylight.SecurityLightRecord;
-import jakarta.annotation.PostConstruct;
+import com.safetygps.safetygps_server.repository.securitylight.SecurityLightRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Slf4j
@@ -24,11 +26,10 @@ public class SecurityLightService {
             new TypeReference<>() {};
 
     private final ObjectMapper objectMapper;
+    private final SecurityLightRepository securityLightRepository;
 
-    private List<SecurityLightRecord> cachedRecords = Collections.emptyList();
-
-    @PostConstruct
-    void loadSecurityLightData() {
+    @Transactional
+    public void syncSecurityLights() {
         try (InputStream inputStream = getClass().getResourceAsStream("/data/security_light.json")) {
             if (inputStream == null) {
                 log.error("❌ 보안등 JSON 파일을 찾을 수 없습니다. (경로: /data/security_light.json)");
@@ -43,40 +44,38 @@ public class SecurityLightService {
                 return;
             }
 
-            cachedRecords = objectMapper.readValue(recordsNode.traverse(), RECORD_LIST_TYPE);
-            log.info("보안등 데이터 {}건 로드 완료", cachedRecords.size());
+            List<SecurityLightRecord> records = objectMapper.readValue(recordsNode.traverse(), RECORD_LIST_TYPE);
+            List<SecurityLight> securityLights = records.stream()
+                    .map(this::toEntity)
+                    .toList();
+
+            securityLightRepository.deleteAllInBatch();
+            securityLightRepository.saveAll(securityLights);
+            log.info("보안등 데이터 {}건 DB 저장 완료", securityLights.size());
         } catch (IOException e) {
             log.error("❌ 보안등 JSON 파싱 중 오류가 발생했습니다.", e);
         }
     }
 
+    @Transactional(readOnly = true)
     public List<SecurityLightResponse> findByAddress(String addressKeyword) {
-        if (addressKeyword == null || addressKeyword.isBlank() || cachedRecords.isEmpty()) {
+        if (addressKeyword == null || addressKeyword.isBlank()) {
             return List.of();
         }
 
         final String trimmedKeyword = addressKeyword.trim();
         final String lowestUnit = extractLowestUnit(addressKeyword);
 
-        return cachedRecords.stream()
-                .filter(record -> matches(record, trimmedKeyword, lowestUnit))
-                .map(record -> new SecurityLightResponse(
-                        record.lampLocationName(),
-                        toDouble(record.latitude()),
-                        toDouble(record.longitude())
+        List<SecurityLight> securityLights =
+                securityLightRepository.searchByAddressKeywords(trimmedKeyword, lowestUnit);
+
+        return securityLights.stream()
+                .map(light -> new SecurityLightResponse(
+                        light.getLampLocationName(),
+                        toDouble(light.getLatitude()),
+                        toDouble(light.getLongitude())
                 ))
                 .toList();
-    }
-
-    private boolean matches(SecurityLightRecord record, String fullKeyword, String lowestUnit) {
-        return contains(record.roadAddress(), fullKeyword)
-                || contains(record.lotAddress(), fullKeyword)
-                || (lowestUnit != null && (contains(record.roadAddress(), lowestUnit)
-                || contains(record.lotAddress(), lowestUnit)));
-    }
-
-    private boolean contains(String source, String keyword) {
-        return source != null && keyword != null && source.contains(keyword);
     }
 
     private String extractLowestUnit(String addressKeyword) {
@@ -88,15 +87,29 @@ public class SecurityLightService {
         return candidate.isBlank() ? null : candidate;
     }
 
-    private Double toDouble(String value) {
+    private SecurityLight toEntity(SecurityLightRecord record) {
+        return SecurityLight.builder()
+                .lampLocationName(record.lampLocationName())
+                .roadAddress(record.roadAddress())
+                .lotAddress(record.lotAddress())
+                .latitude(toBigDecimal(record.latitude()))
+                .longitude(toBigDecimal(record.longitude()))
+                .build();
+    }
+
+    private BigDecimal toBigDecimal(String value) {
         if (value == null || value.isBlank()) {
             return null;
         }
         try {
-            return Double.parseDouble(value);
+            return new BigDecimal(value);
         } catch (NumberFormatException e) {
             log.warn("⚠️ 위도/경도 숫자 변환 실패: {}", value);
             return null;
         }
+    }
+
+    private Double toDouble(BigDecimal value) {
+        return value != null ? value.doubleValue() : null;
     }
 }
