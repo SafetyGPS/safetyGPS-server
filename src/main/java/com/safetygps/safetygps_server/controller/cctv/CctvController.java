@@ -1,10 +1,13 @@
 package com.safetygps.safetygps_server.controller.cctv;
 
+import com.safetygps.safetygps_server.controller.geometry.GeometryController;
 import com.safetygps.safetygps_server.domain.cctv.CctvResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.safetygps.safetygps_server.service.cctv.CctvService;
@@ -17,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CctvController {
 
+    private static final Logger logger = LoggerFactory.getLogger(GeometryController.class);
     private final CctvService cctvService;
 
     @Operation(summary = "지역명으로 CCTV 조회", description = "입력된 동/읍/리에 해당하는 CCTV 위치 데이터를 조회합니다.")
