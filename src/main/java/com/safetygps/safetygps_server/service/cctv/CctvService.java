@@ -1,6 +1,6 @@
-package com.safetygps.safetygps_server.service;
+package com.safetygps.safetygps_server.service.cctv;
 
-import com.safetygps.safetygps_server.domain.CctvResponse;
+import com.safetygps.safetygps_server.domain.cctv.CctvResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;

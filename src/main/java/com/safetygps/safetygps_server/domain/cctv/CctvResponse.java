@@ -1,4 +1,4 @@
-package com.safetygps.safetygps_server.domain;
+package com.safetygps.safetygps_server.domain.cctv;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
