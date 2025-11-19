@@ -18,6 +18,9 @@ public class Cctv {
 
     private String address;
 
+    @Column(precision = 10, scale = 8)
     private BigDecimal latitude;
+
+    @Column(precision = 11, scale = 8)
     private BigDecimal longitude;
 }
