@@ -26,8 +26,11 @@ public class CctvController {
     @Operation(summary = "CCTV 데이터 초기화", description = "CCTV 데이터를 DB에 로드합니다.")
     @PostMapping("/sync")
     public ResponseEntity<String> syncCctvData( @Parameter(description = "예: 김량장동, 역북동 등") @RequestParam String region) {
-        cctvService.syncCctvData(region);
-        return ResponseEntity.ok("CCTV 데이터 동기화 완료");
+        int count = cctvService.syncCctvData(region);
+        if (count == 0) {
+            return ResponseEntity.badRequest().body("해당 지역에 동기화할 CCTV 데이터가 없습니다.");
+        }
+        return ResponseEntity.ok("CCTV 데이터 동기화 완료 (" + count + "건)");
     }
 
     @Operation(summary = "지역명으로 CCTV 조회", description = "입력된 동/읍/리에 해당하는 CCTV 위치 데이터를 조회합니다.")

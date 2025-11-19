@@ -23,36 +23,36 @@ public class CctvService {
 
     private final CctvRepository cctvRepository;
 
-    /**
-     * 특정 동/읍/리만 로드해서 DB 저장
-     */
     @Transactional
-    public void syncCctvData(String keyword) {
+    public int syncCctvData(String keyword) {
 
         if (keyword == null || keyword.isBlank()) {
             log.error("❌ syncCctvData 호출 시 keyword가 비어있음");
-            return;
+            return 0;
         }
 
         String lowestUnit = extractLowestUnit(keyword);
-
+        if (lowestUnit == null || lowestUnit.isBlank()) {
+            log.error("❌ 유효하지 않은 지역 단위: {}", keyword);
+            return 0;
+        }
         log.info("📌 요청한 지역 단위: {}", lowestUnit);
 
         List<CctvRecord> records = loadFromExcelByDong(lowestUnit);
 
         if (records.isEmpty()) {
             log.warn("⚠️ '{}' 에 해당하는 CCTV 데이터 없음", lowestUnit);
-            return;
+            return 0;
         }
 
         List<Cctv> cctvs = records.stream()
                 .map(this::toEntity)
                 .toList();
 
-        cctvRepository.deleteAllInBatch();
+        cctvRepository.deleteByAddressContaining(lowestUnit);
         cctvRepository.saveAll(cctvs);
 
-        log.info("📌 '{}' CCTV 데이터 {}건 DB 저장 완료", lowestUnit, cctvs.size());
+        return cctvs.size();
     }
 
 

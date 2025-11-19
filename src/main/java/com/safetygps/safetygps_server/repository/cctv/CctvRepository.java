@@ -9,10 +9,13 @@ import java.util.List;
 
 public interface CctvRepository extends JpaRepository<Cctv, Long> {
 
+
+    void deleteByAddressContaining(String keyword);
+
     @Query("""
             SELECT c FROM Cctv c
-            WHERE c.address LIKE %:keyword%
-               OR c.address LIKE %:lowestUnit%
+            WHERE c.address LIKE concat('%', :keyword, '%')
+               OR c.address LIKE concat('%', :lowestUnit, '%')
             """)
     List<Cctv> searchByAddress(@Param("keyword") String keyword,
                                @Param("lowestUnit") String lowestUnit);
