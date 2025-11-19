@@ -18,4 +18,10 @@ public class SecurityLightControllerImpl implements SecurityLightController {
     public ResponseEntity<List<SecurityLightResponse>> getSecurityLights(String addressKeyword) {
         return ResponseEntity.ok(securityLightService.findByAddress(addressKeyword));
     }
+
+    @Override
+    public ResponseEntity<String> syncSecurityLights() {
+        securityLightService.syncSecurityLights();
+        return ResponseEntity.ok("✅ 보안등 데이터 동기화 완료");
+    }
 }

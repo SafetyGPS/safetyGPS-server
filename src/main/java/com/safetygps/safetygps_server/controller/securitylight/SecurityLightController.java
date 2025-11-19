@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -20,4 +21,8 @@ public interface SecurityLightController {
     ResponseEntity<List<SecurityLightResponse>> getSecurityLights(
             @Parameter(description = "읍/면/동 또는 전체 주소 (예: 수원시 장안구 연무동)", required = true)
             @RequestParam("address") String addressKeyword);
+
+    @Operation(summary = "보안등 데이터 동기화", description = "보안등 JSON 파일을 읽어 DB에 덮어씁니다.")
+    @PostMapping("/sync")
+    ResponseEntity<String> syncSecurityLights();
 }
