@@ -28,4 +28,11 @@ public interface SecurityLightRepository extends JpaRepository<SecurityLight, Lo
             @Param("fullKeyword") String fullKeyword,
             @Param("lowestUnit") String lowestUnit
     );
+
+    @Query("""
+        SELECT COUNT(s) FROM SecurityLight s
+        WHERE (s.roadAddress IS NOT NULL AND s.roadAddress LIKE CONCAT('%', :keyword, '%'))
+           OR (s.lotAddress IS NOT NULL AND s.lotAddress LIKE CONCAT('%', :keyword, '%'))
+    """)
+    long countByAddressKeyword(@Param("keyword") String keyword);
 }

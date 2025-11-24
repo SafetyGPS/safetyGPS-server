@@ -24,4 +24,16 @@ public interface FacilityRepository extends JpaRepository<Facility, Long> {
             @Param("gu") String gu,
             @Param("dong") String dong
     );
+
+    @Query("""
+        SELECT COUNT(f) FROM Facility f
+        WHERE (:sigunNm IS NULL OR f.sigunNm = :sigunNm)
+          AND (:gu IS NULL OR f.gu = :gu)
+          AND (:dong IS NULL OR f.dong = :dong)
+    """)
+    long countByLocation(
+            @Param("sigunNm") String sigunNm,
+            @Param("gu") String gu,
+            @Param("dong") String dong
+    );
 }
