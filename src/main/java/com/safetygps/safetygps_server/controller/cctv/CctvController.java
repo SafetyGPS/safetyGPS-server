@@ -24,7 +24,7 @@ public class CctvController {
 
 
     @Operation(summary = "CCTV 데이터 초기화", description = "CCTV 데이터를 DB에 로드합니다.")
-    @PostMapping("/sync")
+    @GetMapping("/sync")
     public ResponseEntity<String> syncCctvData( @Parameter(description = "예: 김량장동, 역북동 등") @RequestParam String region) {
         int count = cctvService.syncCctvData(region);
         if (count == 0) {
