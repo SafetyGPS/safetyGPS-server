@@ -9,18 +9,24 @@ on:
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
+    env:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${{ secrets.MYSQL_DATABASE }}
+      DB_USERNAME: ${{ secrets.MYSQL_USER }}
+      DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      JPA_DDL_AUTO: update
 
     services:
       mysql:
         image: mysql:8.0
-        container_name: safetygps-mysql
         ports:
           - 3306:3306
         env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-          MYSQL_USER: ${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_ROOT_PASSWORD: ${{ env.DB_PASSWORD }}
+          MYSQL_DATABASE: ${{ env.DB_NAME }}
+          MYSQL_USER: ${{ env.DB_USERNAME }}
+          MYSQL_PASSWORD: ${{ env.DB_PASSWORD }}
           TZ: Asia/Seoul
         options: >-
           --health-cmd="mysqladmin ping -h localhost -u ${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }}" 
