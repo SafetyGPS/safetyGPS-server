@@ -1,4 +1,4 @@
-name: Code Lint Check
+name: Lint and Test with MySQL
 
 on:
   push:
@@ -7,8 +7,26 @@ on:
     branches: [ "main", "develop" ]
 
 jobs:
-  lint:
+  lint-and-test:
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        container_name: safetygps-mysql
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          TZ: Asia/Seoul
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -u ${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }}" 
+          --health-interval=10s 
+          --health-timeout=5s 
+          --health-retries=5
 
     steps:
       - name: Checkout Repository
@@ -24,5 +42,25 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Run Code Lint (Checkstyle/Spotless)
+      - name: Wait for MySQL to be ready
+        run: |
+          echo "Waiting for MySQL to be ready..."
+          for i in {1..30}; do
+            if mysqladmin ping -h 127.0.0.1 -P 3306 -u ${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} --silent; then
+              echo "MySQL is ready"
+              break
+            fi
+            echo "Waiting 2 seconds..."
+            sleep 2
+          done
+
+      - name: Run Code Lint and Tests
         run: ./gradlew check --stacktrace
+        env:
+          DB_HOST: mysql
+          DB_PORT: 3306
+          DB_NAME: ${{ secrets.MYSQL_DATABASE }}
+          DB_USERNAME: ${{ secrets.MYSQL_USER }}
+          DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          JPA_DDL_AUTO: update
+          GG_OPENAPI_KEY: ${{ secrets.GG_OPENAPI_KEY }}
