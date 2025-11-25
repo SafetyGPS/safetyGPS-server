@@ -19,7 +19,7 @@ public interface FacilityController {
             summary = "시설 데이터 동기화",
             description = "경기도 공공데이터 포털로부터 시설 정보를 조회하고 DB에 저장합니다."
     )
-    @PostMapping("/api/facilities/sync")
+    @GetMapping("/api/facilities/sync")
     ResponseEntity<String> syncFromOpenApi(
             @Parameter(description = "시군명 (예: 수원시, 고양시)", example = "수원시")
             @RequestParam String sigunNm

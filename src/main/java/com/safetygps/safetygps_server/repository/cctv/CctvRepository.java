@@ -11,6 +11,7 @@ public interface CctvRepository extends JpaRepository<Cctv, Long> {
 
 
     void deleteByAddressContaining(String keyword);
+    long countByAddressContaining(String keyword);
 
     @Query("""
             SELECT c FROM Cctv c

@@ -23,6 +23,6 @@ public interface SecurityLightController {
             @RequestParam("address") String addressKeyword);
 
     @Operation(summary = "보안등 데이터 동기화", description = "보안등 JSON 파일을 읽어 DB에 덮어씁니다.")
-    @PostMapping("/sync")
+    @GetMapping("/sync")
     ResponseEntity<String> syncSecurityLights();
 }
