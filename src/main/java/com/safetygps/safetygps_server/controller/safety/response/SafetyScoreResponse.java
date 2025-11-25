@@ -25,8 +25,23 @@ public record SafetyScoreResponse(
         @Schema(description = "해당 지역 시설 개수")
         long facilityCount,
 
-        @Schema(description = "사용자 리뷰 점수 합")
-        long reviewScoreSum,
+        @Schema(description = "해당 지역 사용자 리뷰 개수")
+        long reviewCount,
+
+        @Schema(description = "사용자 리뷰 평균 점수(0~5)")
+        double reviewAverage,
+
+        @Schema(description = "CCTV 지표 점수(0~100)")
+        double cctvScore,
+
+        @Schema(description = "보안등 지표 점수(0~100)")
+        double securityLightScore,
+
+        @Schema(description = "치안시설 지표 점수(0~100)")
+        double facilityScore,
+
+        @Schema(description = "사용자 리뷰 지표 점수(0~100, 표본수 가중 반영)")
+        double reviewScore,
 
         @Schema(description = "가중치가 반영된 총 안전점수")
         long totalScore

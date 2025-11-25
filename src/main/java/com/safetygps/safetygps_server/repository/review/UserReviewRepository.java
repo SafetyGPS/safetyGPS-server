@@ -33,4 +33,16 @@ public interface UserReviewRepository extends JpaRepository<UserReview, Long> {
             @Param("gu") String gu,
             @Param("dong") String dong
     );
+
+    @Query("""
+        SELECT COUNT(r) FROM UserReview r
+        WHERE (:sigunNm IS NULL OR r.sigunNm = :sigunNm)
+          AND (:gu IS NULL OR r.gu = :gu)
+          AND (:dong IS NULL OR r.dong = :dong)
+    """)
+    long countByLocation(
+            @Param("sigunNm") String sigunNm,
+            @Param("gu") String gu,
+            @Param("dong") String dong
+    );
 }
