@@ -30,7 +30,7 @@ jobs:
       - name: Run Docker MySQL
         run: |
           cd docker
-          docker-compose up -d
+          docker compose up -d
           cd ..
           echo " Waiting for MySQL..."
           sleep 15
