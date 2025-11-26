@@ -31,6 +31,16 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Start MySQL using Docker Compose
+        run: |
+          cd docker
+          docker compose up -d
+
+      - name: Wait for Database Ready
+        run: |
+          echo "⏳ Waiting for MySQL to initialize..."
+          sleep 15
+
       - name: Make gradlew executable
         run: chmod +x gradlew
 

@@ -26,15 +26,18 @@ jobs:
           chmod +x gradlew
           ./gradlew clean build -x test
 
-      - name: Generate OpenAPI JSON from running app
+      - name: Run Docker Services
+        run: |
+          cd docker
+          docker-compose up -d
+
+      - name: Generate OpenAPI JSON
         run: |
           mkdir -p docs
-          java -jar build/libs/*SNAPSHOT.jar &
-          sleep 10
+          sleep 15
           curl -o docs/openapi.json http://localhost:8080/v3/api-docs
-          pkill -f "java -jar"
 
-      - name: Download Swagger UI and set config
+      - name: Download Swagger UI and Apply Config
         run: |
           wget https://github.com/swagger-api/swagger-ui/archive/refs/heads/master.zip -O swagger.zip
           unzip swagger.zip
