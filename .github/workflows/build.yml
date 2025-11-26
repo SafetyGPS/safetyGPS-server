@@ -1,4 +1,4 @@
-name: Build and Test (Gradle)
+name: Build (Gradle)
 
 on:
   push:
