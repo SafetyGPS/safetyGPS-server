@@ -21,20 +21,29 @@ jobs:
           distribution: "temurin"
           cache: gradle
 
-      - name: Build Spring Boot App (no test)
-        run: |
-          chmod +x gradlew
-          ./gradlew clean build -x test
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
-      - name: Run Docker Services
+      - name: Build Spring Boot App (no test)
+        run: ./gradlew clean build -x test
+
+      - name: Run Docker MySQL
         run: |
           cd docker
           docker-compose up -d
+          cd ..
+          echo " Waiting for MySQL..."
+          sleep 15
+
+      - name: Run Spring Boot App
+        run: |
+          nohup ./gradlew bootRun --args='--spring.profiles.active=prod' &
+          echo " Waiting for Spring Boot to start..."
+          sleep 25
 
       - name: Generate OpenAPI JSON
         run: |
           mkdir -p docs
-          sleep 15
           curl -o docs/openapi.json http://localhost:8080/v3/api-docs
 
       - name: Download Swagger UI and Apply Config

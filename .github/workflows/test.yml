@@ -24,11 +24,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Set up JDK 17 (Temurin)
+      - name: Setup JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: "17"
+          distribution: "temurin"
           cache: gradle
 
       - name: Start MySQL using Docker Compose
@@ -36,16 +36,20 @@ jobs:
           cd docker
           docker compose up -d
 
-      - name: Wait for Database Ready
+      - name: Wait for MySQL to be ready
         run: |
-          echo "⏳ Waiting for MySQL to initialize..."
-          sleep 15
+          echo "Waiting for MySQL..."
+          for i in {1..10}; do
+            nc -z localhost 3306 && break
+            echo "MySQL not ready yet..."
+            sleep 5
+          done
 
       - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Run Unit Tests with Gradle
+      - name: Run Unit Tests
         run: ./gradlew test --stacktrace
 
-      - name: Build with Gradle
+      - name: Build Project
         run: ./gradlew build --stacktrace
