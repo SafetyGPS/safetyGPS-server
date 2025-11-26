@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: safetygps-server
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}  # none, validate, update, create, create-drop 중 선택
+      default_batch_fetch_size: 1000
+      jdbc:
+        time_zone: Asia/Seoul
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+gg-openapi:
+  base-url: https://openapi.gg.go.kr/FiresttnPolcsttnM
+  api-key: ${GG_OPENAPI_KEY:}
+  default-page-size: 1000
+  response-type: json
